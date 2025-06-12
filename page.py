@@ -77,6 +77,7 @@ if st.session_state.page == "home":
     <div class="center">
         <h1>🎧 Digital Music Equalizer</h1>
         <p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>
+        <button class="start-button" onclick="window.location.href='#';">Start Now</button>
     </div>
     """, unsafe_allow_html=True)
 
@@ -84,18 +85,16 @@ if st.session_state.page == "home":
         st.session_state.page = "equalizer"
         st.rerun()
 
-# --- Equalizer Page (Introduction) ---
+# --- Equalizer Introduction Page ---
 elif st.session_state.page == "equalizer":
-    st.title("🎛️ Digital Music Equalizer")
-
     st.markdown("""
-    <div style="text-align: center; font-size: 1.2em;">
-        <p>Welcome to the Digital Music Equalizer! 🎶</p>
-        <p>Upload your audio track and fine-tune the frequencies to shape your sound.</p>
+    <div class="center">
+        <h1>🎛️ Digital Music Equalizer</h1>
+        <p style='font-size: 1.2em;'>Welcome to your personalized sound studio.</p>
+        <p style='font-size: 1.2em;'>Upload your track and fine-tune frequencies to craft your perfect mix.</p>
+        <button class="start-button" onclick="window.location.href='#';">🎚️ Go to Equalizer Controls</button>
     </div>
     """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
 
     if st.button("🎚️ Go to Equalizer Controls"):
         st.session_state.page = "controls"
@@ -126,7 +125,7 @@ elif st.session_state.page == "controls":
             buf = io.BytesIO()
             sf.write(buf, output, fs, format='WAV')
             st.audio(buf, format='audio/wav')
-            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="hotpink_equalized_output.wav")
+            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="equalized_output.wav")
 
             # Visualization
             st.subheader("🔊 Processed Track Waveform")
