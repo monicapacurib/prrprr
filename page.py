@@ -106,7 +106,7 @@ if st.session_state.page == "home":
     st.markdown("<p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>", unsafe_allow_html=True)
     if st.container().button("Start Now", key="start_home", help="Learn more first!", use_container_width=False):
         st.session_state.page = "about"
-        st.experimental_rerun()
+        st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # --- About Page ---
@@ -123,7 +123,7 @@ elif st.session_state.page == "about":
 
     if st.container().button("Continue to Equalizer", key="to_equalizer", use_container_width=False):
         st.session_state.page = "equalizer"
-        st.experimental_rerun()
+        st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # --- Equalizer Page ---
