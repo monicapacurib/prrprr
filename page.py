@@ -19,7 +19,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
     .stApp {
-        background: linear-gradient(135deg, #0a0a0a, #1a001a);
+        background: radial-gradient(circle at top, #0a0a0a, #1a001a);
         color: white;
         font-family: 'Orbitron', sans-serif;
     }
@@ -32,13 +32,13 @@ st.markdown("""
     .start-button {
         background: linear-gradient(90deg, #ff5f6d, #845ec2);
         border: none;
-        padding: 0.75em 2em;
-        font-size: 1.2em;
+        padding: 0.9em 2.5em;
+        font-size: 1.4em;
         color: white;
         font-weight: bold;
-        border-radius: 25px;
+        border-radius: 30px;
         cursor: pointer;
-        box-shadow: 0 0 20px #ff69b4;
+        box-shadow: 0 0 25px #ff69b4;
         transition: 0.3s ease;
     }
 
@@ -49,7 +49,27 @@ st.markdown("""
 
     .center {
         text-align: center;
-        margin-top: 10em;
+        margin-top: 12em;
+    }
+
+    .stSlider > div { background-color: #111; border-radius: 10px; padding: 0.5em; }
+    .stSlider input[type=range]::-webkit-slider-thumb {
+        background: #ff69b4;
+        box-shadow: 0 0 12px #ff69b4;
+    }
+    .stSlider input[type=range]::-webkit-slider-runnable-track { background: #333; }
+
+    .stDownloadButton button {
+        background: linear-gradient(90deg, #ff5f6d, #845ec2);
+        color: white;
+        font-weight: bold;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 0 12px #ff69b4;
+    }
+    .stDownloadButton button:hover {
+        background: linear-gradient(90deg, #845ec2, #ff5f6d);
+        color: black;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -77,25 +97,30 @@ if st.session_state.page == "home":
     <div class="center">
         <h1>🎧 Digital Music Equalizer</h1>
         <p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>
+        <button class="start-button" onclick="window.location.href='#';" id="startBtn">Start Now</button>
     </div>
+
+    <script>
+        const startBtn = window.parent.document.querySelector('#startBtn') || document.getElementById('startBtn');
+        startBtn.onclick = function() {
+            window.parent.postMessage({type: 'streamlit:setComponentValue', key: 'start_clicked', value: true}, '*');
+        };
+    </script>
     """, unsafe_allow_html=True)
 
     if st.button("Start Now"):
         st.session_state.page = "equalizer"
         st.rerun()
 
-# --- Equalizer Page (Introduction) ---
+# --- Equalizer Introduction Page ---
 elif st.session_state.page == "equalizer":
     st.title("🎛️ Digital Music Equalizer")
-
     st.markdown("""
     <div style="text-align: center; font-size: 1.2em;">
         <p>Welcome to the Digital Music Equalizer! 🎶</p>
         <p>Upload your audio track and fine-tune the frequencies to shape your sound.</p>
     </div>
     """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
 
     if st.button("🎚️ Go to Equalizer Controls"):
         st.session_state.page = "controls"
@@ -122,13 +147,11 @@ elif st.session_state.page == "controls":
 
             output = apply_equalizer(data, fs, [bass, mid, treble])
 
-            # Save and play
             buf = io.BytesIO()
             sf.write(buf, output, fs, format='WAV')
             st.audio(buf, format='audio/wav')
-            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="hotpink_equalized_output.wav")
+            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="equalized_output.wav")
 
-            # Visualization
             st.subheader("🔊 Processed Track Waveform")
             fig, ax = plt.subplots(figsize=(10, 4))
             time = np.linspace(0, len(output) / fs, num=len(output))
