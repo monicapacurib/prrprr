@@ -17,34 +17,67 @@ if "page" not in st.session_state:
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
     .stApp {
         background: linear-gradient(135deg, #0a0a0a, #1a001a);
         color: white;
         font-family: 'Orbitron', sans-serif;
     }
+
     h1, h2, h3 {
         color: white;
         text-shadow: 0 0 15px #ff69b4;
     }
-    .styled-button {
+
+    .main-button button {
         background: linear-gradient(90deg, #ff5f6d, #845ec2);
         border: none;
-        padding: 0.75em 2em;
-        font-size: 1.2em;
+        padding: 1.2em 3em;
+        font-size: 1.5em;
         color: white;
         font-weight: bold;
         border-radius: 25px;
-        cursor: pointer;
-        box-shadow: 0 0 20px #ff69b4;
+        box-shadow: 0 0 25px #ff69b4;
         transition: 0.3s ease;
     }
-    .styled-button:hover {
+
+    .main-button button:hover {
         background: linear-gradient(90deg, #845ec2, #ff5f6d);
         color: black;
     }
+
     .center {
         text-align: center;
-        margin-top: 10em;
+        margin-top: 8em;
+    }
+
+    .stSlider > div {
+        background-color: #111;
+        border-radius: 10px;
+        padding: 0.5em;
+    }
+
+    .stSlider input[type=range]::-webkit-slider-thumb {
+        background: #ff69b4;
+        box-shadow: 0 0 12px #ff69b4;
+    }
+
+    .stSlider input[type=range]::-webkit-slider-runnable-track {
+        background: #333;
+    }
+
+    .stDownloadButton button {
+        background: #ff69b4;
+        color: black;
+        font-weight: bold;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 0 12px #ff69b4;
+    }
+
+    .stDownloadButton button:hover {
+        background: #ff85c1;
+        color: #000;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -68,35 +101,35 @@ def apply_equalizer(data, fs, gains):
 
 # --- Home Page ---
 if st.session_state.page == "home":
+    st.markdown("""<div class="center">""", unsafe_allow_html=True)
+    st.markdown("<h1>🎧 Digital Music Equalizer</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>", unsafe_allow_html=True)
+    if st.container().button("Start Now", key="start_home", help="Learn more first!", use_container_width=False):
+        st.session_state.page = "about"
+        st.experimental_rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# --- About Page ---
+elif st.session_state.page == "about":
+    st.markdown("""<div class="center">""", unsafe_allow_html=True)
+    st.markdown("<h1>ℹ️ About This App</h1>", unsafe_allow_html=True)
     st.markdown("""
-        <div class="center">
-            <h1>🎧 Digital Music Equalizer</h1>
-            <p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>
-        </div>
+        <p style='font-size: 1.1em;'>
+        This Digital Music Equalizer lets you upload your audio and shape it to your taste.<br>
+        Boost the bass, enhance the mids, and sharpen the treble with precision filters.<br><br>
+        Works with WAV or MP3 up to 100 MB.
+        </p>
     """, unsafe_allow_html=True)
 
-    if st.button("Start Now", key="start_button"):
+    if st.container().button("Continue to Equalizer", key="to_equalizer", use_container_width=False):
         st.session_state.page = "equalizer"
-        st.rerun()  # Force rerun to update page
+        st.experimental_rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# --- Equalizer Page (Introduction) ---
+# --- Equalizer Page ---
 elif st.session_state.page == "equalizer":
     st.title("🎛️ Digital Music Equalizer")
-    st.markdown("""
-        <div style="text-align: center; font-size: 1.2em;">
-            <p>Welcome to the Digital Music Equalizer! 🎶</p>
-            <p>Upload your audio track and fine-tune the frequencies to shape your sound.</p>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
 
-    if st.button("🎚️ Go to Equalizer Controls", key="controls_button"):
-        st.session_state.page = "controls"
-        st.rerun()  # Force rerun to update page
-
-# --- Equalizer Controls Page ---
-elif st.session_state.page == "controls":
-    st.title("🎚️ Adjust Your Sound")
     uploaded_file = st.file_uploader("🎵 Upload your audio track (WAV or MP3)", type=["wav", "mp3"])
 
     if uploaded_file is not None:
@@ -118,9 +151,7 @@ elif st.session_state.page == "controls":
             buf = io.BytesIO()
             sf.write(buf, output, fs, format='WAV')
             st.audio(buf, format='audio/wav')
-
-            # Styled Download Button
-            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="hotpink_equalized_output.wav")
+            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="equalized_output.wav")
 
             # Visualization
             st.subheader("🔊 Processed Track Waveform")
