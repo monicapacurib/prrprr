@@ -29,20 +29,19 @@ st.markdown("""
         text-shadow: 0 0 15px #ff69b4;
     }
 
-    .start-button {
+    .glow-button {
         background: linear-gradient(90deg, #ff5f6d, #845ec2);
         border: none;
-        padding: 0.9em 2.5em;
-        font-size: 1.4em;
+        padding: 1.2em 3em;
+        font-size: 1.5em;
         color: white;
         font-weight: bold;
-        border-radius: 30px;
+        border-radius: 25px;
         cursor: pointer;
         box-shadow: 0 0 25px #ff69b4;
         transition: 0.3s ease;
     }
-
-    .start-button:hover {
+    .glow-button:hover {
         background: linear-gradient(90deg, #845ec2, #ff5f6d);
         color: black;
     }
@@ -97,34 +96,61 @@ if st.session_state.page == "home":
     <div class="center">
         <h1>🎧 Digital Music Equalizer</h1>
         <p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>
-        <button class="start-button" onclick="window.location.href='#';" id="startBtn">Start Now</button>
+        <button class="glow-button" onclick="window.parent.postMessage({type: 'streamlit:setComponentValue', key: 'start_clicked', value: true}, '*');">
+            Start Now
+        </button>
     </div>
-
-    <script>
-        const startBtn = window.parent.document.querySelector('#startBtn') || document.getElementById('startBtn');
-        startBtn.onclick = function() {
-            window.parent.postMessage({type: 'streamlit:setComponentValue', key: 'start_clicked', value: true}, '*');
-        };
-    </script>
     """, unsafe_allow_html=True)
 
-    if st.button("Start Now"):
+    # Invisible trigger for button
+    clicked = st.empty()
+    if clicked.button("Start Now", key="hidden_start_btn", help="hidden", disabled=True):
         st.session_state.page = "equalizer"
         st.rerun()
 
+    # JS listener to set session_state on click of the big button
+    st.markdown("""
+    <script>
+        window.addEventListener("message", (event) => {
+            const data = event.data;
+            if (data?.key === "start_clicked") {
+                const streamlitEvent = new Event("click");
+                const btn = window.parent.document.querySelector('button[kind="secondary"]');
+                if (btn) btn.dispatchEvent(streamlitEvent);
+            }
+        });
+    </script>
+    """, unsafe_allow_html=True)
+
 # --- Equalizer Introduction Page ---
 elif st.session_state.page == "equalizer":
-    st.title("🎛️ Digital Music Equalizer")
     st.markdown("""
-    <div style="text-align: center; font-size: 1.2em;">
-        <p>Welcome to the Digital Music Equalizer! 🎶</p>
-        <p>Upload your audio track and fine-tune the frequencies to shape your sound.</p>
+    <div style="text-align: center; margin-top: 8em;">
+        <h1>🎛️ Digital Music Equalizer</h1>
+        <p style='font-size: 1.2em;'>Welcome! Upload your track and fine-tune your sound.</p>
+        <button class="glow-button" onclick="window.parent.postMessage({type: 'streamlit:setComponentValue', key: 'go_clicked', value: true}, '*');">
+            🎚️ Go to Equalizer Controls
+        </button>
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("🎚️ Go to Equalizer Controls"):
+    clicked = st.empty()
+    if clicked.button("Go", key="hidden_go_btn", help="hidden", disabled=True):
         st.session_state.page = "controls"
         st.rerun()
+
+    st.markdown("""
+    <script>
+        window.addEventListener("message", (event) => {
+            const data = event.data;
+            if (data?.key === "go_clicked") {
+                const streamlitEvent = new Event("click");
+                const btn = window.parent.document.querySelector('button[kind="secondary"]');
+                if (btn) btn.dispatchEvent(streamlitEvent);
+            }
+        });
+    </script>
+    """, unsafe_allow_html=True)
 
 # --- Equalizer Controls Page ---
 elif st.session_state.page == "controls":
