@@ -55,7 +55,8 @@ st.markdown("""
 
     .center {
         text-align: center;
-        margin-top: 8em;
+        margin-top: 6em;
+        margin-bottom: 4em;
     }
 
     .stSlider > div {
@@ -116,7 +117,7 @@ if st.session_state.page == "home":
     st.markdown("""<div class="center">""", unsafe_allow_html=True)
     st.markdown("<h1>🎧 Digital Music Equalizer</h1>", unsafe_allow_html=True)
     st.markdown("<p style='font-size: 1.2em; text-align: center;'>Shape your sound with studio-level precision.</p>", unsafe_allow_html=True)
-    
+
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("Start Now"):
@@ -147,44 +148,40 @@ elif st.session_state.page == "about":
 elif st.session_state.page == "equalizer":
     st.markdown("<h1>🎛️ Digital Music Equalizer</h1>", unsafe_allow_html=True)
 
-    uploaded_file = st.file_uploader("🎵 Upload your audio track (WAV or MP3)", type=["wav", "mp3"])
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        uploaded_file = st.file_uploader("🎵 Upload your audio track (WAV or MP3)", type=["wav", "mp3"])
 
-    if uploaded_file is not None:
-        file_size_mb = uploaded_file.size / (1024 * 1024)
-        if file_size_mb > 100:
-            st.error("⚠️ File size exceeds 100 MB limit. Please upload a smaller file.")
-        else:
-            data, fs = load_audio(uploaded_file)
-            st.audio(uploaded_file)
+        if uploaded_file is not None:
+            file_size_mb = uploaded_file.size / (1024 * 1024)
+            if file_size_mb > 100:
+                st.error("⚠️ File size exceeds 100 MB limit. Please upload a smaller file.")
+            else:
+                data, fs = load_audio(uploaded_file)
+                st.audio(uploaded_file)
 
-            st.markdown("<h2 style='text-align: center;'>🎚️ Adjust the Frequencies</h2>", unsafe_allow_html=True)
+                st.markdown("<h2 style='text-align: center;'>🎚️ Adjust the Frequencies</h2>", unsafe_allow_html=True)
 
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
                 bass = st.slider("Bass Boost (60–250 Hz)", 0.0, 2.0, 1.0, 0.1)
                 mid = st.slider("Midrange Boost (250 Hz – 4 kHz)", 0.0, 2.0, 1.0, 0.1)
                 treble = st.slider("Treble Boost (4–10 kHz)", 0.0, 2.0, 1.0, 0.1)
 
-            output = apply_equalizer(data, fs, [bass, mid, treble])
+                output = apply_equalizer(data, fs, [bass, mid, treble])
 
-            # Save and play
-            buf = io.BytesIO()
-            sf.write(buf, output, fs, format='WAV')
-            st.audio(buf, format='audio/wav')
+                buf = io.BytesIO()
+                sf.write(buf, output, fs, format='WAV')
+                st.audio(buf, format='audio/wav')
 
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
                 st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="equalized_output.wav")
 
-            # Visualization
-            st.subheader("🔊 Processed Track Waveform")
-            fig, ax = plt.subplots(figsize=(10, 4))
-            time = np.linspace(0, len(output) / fs, num=len(output))
-            ax.plot(time, output, color="#ff69b4", linewidth=0.5)
-            ax.set_title("Processed Audio", fontsize=12, color='#ff69b4')
-            ax.set_xlabel("Time [s]", color='white')
-            ax.set_ylabel("Amplitude", color='white')
-            ax.set_facecolor("#0a0a0a")
-            ax.tick_params(colors='white')
-            fig.patch.set_facecolor("#0a0a0a")
-            st.pyplot(fig)
+                st.subheader("🔊 Processed Track Waveform")
+                fig, ax = plt.subplots(figsize=(10, 4))
+                time = np.linspace(0, len(output) / fs, num=len(output))
+                ax.plot(time, output, color="#ff69b4", linewidth=0.5)
+                ax.set_title("Processed Audio", fontsize=12, color='#ff69b4')
+                ax.set_xlabel("Time [s]", color='white')
+                ax.set_ylabel("Amplitude", color='white')
+                ax.set_facecolor("#0a0a0a")
+                ax.tick_params(colors='white')
+                fig.patch.set_facecolor("#0a0a0a")
+                st.pyplot(fig)
