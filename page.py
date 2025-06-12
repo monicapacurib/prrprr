@@ -115,9 +115,25 @@ elif st.session_state.page == "about":
     st.markdown("<h1>ℹ️ About This App</h1>", unsafe_allow_html=True)
     st.markdown("""
         <p style='font-size: 1.1em;'>
-        This Digital Music Equalizer lets you upload your audio and shape it to your taste.<br>
-        Boost the bass, enhance the mids, and sharpen the treble with precision filters.<br><br>
-        Works with WAV or MP3 up to 100 MB.
+        <strong>Welcome to the Digital Music Equalizer!</strong><br><br>
+        🎶 <strong>What it does:</strong><br>
+        This app allows you to fine-tune your audio files by adjusting frequency bands—<em>Bass</em>, <em>Midrange</em>, and <em>Treble</em>—using professional-grade filters.<br><br>
+        
+        🎚️ <strong>How it works:</strong><br>
+        The audio signal is split into frequency bands with digital filters (FIR bandpass filters), and you can boost or reduce each band independently.<br><br>
+
+        💾 <strong>Supported Files:</strong><br>
+        • WAV or MP3 audio formats<br>
+        • Maximum file size: 100 MB<br><br>
+        
+        📦 <strong>Features:</strong><br>
+        • Studio-inspired design<br>
+        • Real-time preview of your adjustments<br>
+        • Download your customized track in WAV format<br>
+        • Waveform visualization to monitor your sound<br><br>
+        
+        🎧 Whether you're enhancing podcasts, remixing songs, or refining recordings—<br>
+        this equalizer gives you full control over your audio’s character.
         </p>
     """, unsafe_allow_html=True)
 
