@@ -27,6 +27,13 @@ st.markdown("""
     h1, h2, h3 {
         color: white;
         text-shadow: 0 0 15px #ff69b4;
+        text-align: center;
+    }
+
+    .main-button {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
     }
 
     .main-button button {
@@ -66,6 +73,11 @@ st.markdown("""
         background: #333;
     }
 
+    .stDownloadButton {
+        display: flex;
+        justify-content: center;
+    }
+
     .stDownloadButton button {
         background: #ff69b4;
         color: black;
@@ -103,10 +115,13 @@ def apply_equalizer(data, fs, gains):
 if st.session_state.page == "home":
     st.markdown("""<div class="center">""", unsafe_allow_html=True)
     st.markdown("<h1>🎧 Digital Music Equalizer</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>", unsafe_allow_html=True)
-    if st.container().button("Start Now", key="start_home", help="Learn more first!", use_container_width=False):
-        st.session_state.page = "about"
-        st.rerun()
+    st.markdown("<p style='font-size: 1.2em; text-align: center;'>Shape your sound with studio-level precision.</p>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("Start Now"):
+            st.session_state.page = "about"
+            st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # --- About Page ---
@@ -114,21 +129,23 @@ elif st.session_state.page == "about":
     st.markdown("""<div class="center">""", unsafe_allow_html=True)
     st.markdown("<h1>ℹ️ About This App</h1>", unsafe_allow_html=True)
     st.markdown("""
-        <p style='font-size: 1.1em;'>
+        <p style='font-size: 1.1em; text-align: center;'>
         This Digital Music Equalizer lets you upload your audio and shape it to your taste.<br>
         Boost the bass, enhance the mids, and sharpen the treble with precision filters.<br><br>
         Works with WAV or MP3 up to 100 MB.
         </p>
     """, unsafe_allow_html=True)
 
-    if st.container().button("Continue to Equalizer", key="to_equalizer", use_container_width=False):
-        st.session_state.page = "equalizer"
-        st.rerun()
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("Continue to Equalizer"):
+            st.session_state.page = "equalizer"
+            st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # --- Equalizer Page ---
 elif st.session_state.page == "equalizer":
-    st.title("🎛️ Digital Music Equalizer")
+    st.markdown("<h1>🎛️ Digital Music Equalizer</h1>", unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader("🎵 Upload your audio track (WAV or MP3)", type=["wav", "mp3"])
 
@@ -140,10 +157,13 @@ elif st.session_state.page == "equalizer":
             data, fs = load_audio(uploaded_file)
             st.audio(uploaded_file)
 
-            st.subheader("🎚️ Adjust the Frequencies")
-            bass = st.slider("Bass Boost (60–250 Hz)", 0.0, 2.0, 1.0, 0.1)
-            mid = st.slider("Midrange Boost (250 Hz – 4 kHz)", 0.0, 2.0, 1.0, 0.1)
-            treble = st.slider("Treble Boost (4–10 kHz)", 0.0, 2.0, 1.0, 0.1)
+            st.markdown("<h2 style='text-align: center;'>🎚️ Adjust the Frequencies</h2>", unsafe_allow_html=True)
+
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                bass = st.slider("Bass Boost (60–250 Hz)", 0.0, 2.0, 1.0, 0.1)
+                mid = st.slider("Midrange Boost (250 Hz – 4 kHz)", 0.0, 2.0, 1.0, 0.1)
+                treble = st.slider("Treble Boost (4–10 kHz)", 0.0, 2.0, 1.0, 0.1)
 
             output = apply_equalizer(data, fs, [bass, mid, treble])
 
@@ -151,7 +171,10 @@ elif st.session_state.page == "equalizer":
             buf = io.BytesIO()
             sf.write(buf, output, fs, format='WAV')
             st.audio(buf, format='audio/wav')
-            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="equalized_output.wav")
+
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="equalized_output.wav")
 
             # Visualization
             st.subheader("🔊 Processed Track Waveform")
