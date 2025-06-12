@@ -80,7 +80,7 @@ if st.session_state.page == "home":
 
     if st.query_params.get("start") == "1":
         st.session_state.page = "equalizer"
-        st.experimental_rerun()  # Force rerun to update page
+        st.rerun()  # Force rerun to update page
 
 # --- Equalizer Page (Introduction) ---
 elif st.session_state.page == "equalizer":
@@ -95,7 +95,7 @@ elif st.session_state.page == "equalizer":
 
     if st.button("🎚️ Go to Equalizer Controls"):
         st.session_state.page = "controls"
-        st.experimental_rerun()  # Force rerun to update page
+        st.rerun()  # Force rerun to update page
 
 # --- Equalizer Controls Page ---
 elif st.session_state.page == "controls":
