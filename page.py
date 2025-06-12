@@ -6,42 +6,45 @@ import io
 import librosa
 import matplotlib.pyplot as plt
 
+# --- Page Config ---
 st.set_page_config(page_title="Digital Music Equalizer", layout="centered")
 
+# --- Session state to switch pages ---
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
-# --- CSS Styling ---
+# --- Styles ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
-
     .stApp {
-        background: radial-gradient(circle at top, #0a0a0a, #1a001a);
+        background: linear-gradient(135deg, #0a0a0a, #1a001a);
         color: white;
         font-family: 'Orbitron', sans-serif;
     }
-
-    h1 {
+    h1, h2, h3 {
         color: white;
         text-shadow: 0 0 15px #ff69b4;
-        font-size: 3rem;
     }
-
-    .main-button button {
+    .start-button {
         background: linear-gradient(90deg, #ff5f6d, #845ec2);
         border: none;
-        padding: 1.2em 3em;
-        font-size: 1.5em;
+        padding: 0.75em 2em;
+        font-size: 1.2em;
         color: white;
         font-weight: bold;
         border-radius: 25px;
-        box-shadow: 0 0 25px #ff69b4;
+        cursor: pointer;
+        box-shadow: 0 0 20px #ff69b4;
         transition: 0.3s ease;
     }
-    .main-button button:hover {
+    .start-button:hover {
         background: linear-gradient(90deg, #845ec2, #ff5f6d);
         color: black;
+    }
+    .center {
+        text-align: center;
+        margin-top: 10em;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -63,32 +66,40 @@ def apply_equalizer(data, fs, gains):
         processed += filtered * gain
     return processed
 
-# --- Pages ---
+# --- Home Page ---
 if st.session_state.page == "home":
-    st.markdown("<div style='text-align: center; margin-top: 8em;'>", unsafe_allow_html=True)
-    st.markdown("<h1>🎧 Digital Music Equalizer</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>", unsafe_allow_html=True)
-    
-    if st.container().button("Start Now", key="start_btn", help="Go to Equalizer", use_container_width=False):
+    st.markdown("""
+        <div class="center">
+            <h1>🎧 Digital Music Equalizer</h1>
+            <p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>
+            <form action="">
+                <button class="start-button" type="submit" name="start" value="1">Start Now</button>
+            </form>
+        </div>
+    """, unsafe_allow_html=True)
+
+    if st.query_params.get("start") == "1":
         st.session_state.page = "equalizer"
-        st.experimental_rerun()
-    
-    st.markdown("</div>", unsafe_allow_html=True)
+        st.experimental_rerun()  # Force rerun to update page
 
+# --- Equalizer Page (Introduction) ---
 elif st.session_state.page == "equalizer":
-    st.markdown("<div style='text-align: center; margin-top: 5em;'>", unsafe_allow_html=True)
-    st.markdown("<h1>🎚️ Digital Music Equalizer</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size: 1.2em;'>Upload your track and fine-tune your sound.</p>", unsafe_allow_html=True)
-    
-    if st.container().button("🎚️ Go to Equalizer Controls", key="go_btn", help="Go to Controls", use_container_width=False):
-        st.session_state.page = "controls"
-        st.experimental_rerun()
-    
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.title("🎛️ Digital Music Equalizer")
+    st.markdown("""
+        <div style="text-align: center; font-size: 1.2em;">
+            <p>Welcome to the Digital Music Equalizer! 🎶</p>
+            <p>Upload your audio track and fine-tune the frequencies to shape your sound.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
 
+    if st.button("🎚️ Go to Equalizer Controls"):
+        st.session_state.page = "controls"
+        st.experimental_rerun()  # Force rerun to update page
+
+# --- Equalizer Controls Page ---
 elif st.session_state.page == "controls":
     st.title("🎚️ Adjust Your Sound")
-
     uploaded_file = st.file_uploader("🎵 Upload your audio track (WAV or MP3)", type=["wav", "mp3"])
 
     if uploaded_file is not None:
@@ -106,11 +117,13 @@ elif st.session_state.page == "controls":
 
             output = apply_equalizer(data, fs, [bass, mid, treble])
 
+            # Save and play
             buf = io.BytesIO()
             sf.write(buf, output, fs, format='WAV')
             st.audio(buf, format='audio/wav')
-            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="equalized_output.wav")
+            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="hotpink_equalized_output.wav")
 
+            # Visualization
             st.subheader("🔊 Processed Track Waveform")
             fig, ax = plt.subplots(figsize=(10, 4))
             time = np.linspace(0, len(output) / fs, num=len(output))
