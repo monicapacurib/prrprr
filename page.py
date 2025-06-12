@@ -46,21 +46,6 @@ st.markdown("""
         text-align: center;
         margin-top: 10em;
     }
-    .stDownloadButton button {
-        background: linear-gradient(90deg, #ff5f6d, #845ec2);
-        color: white;
-        font-weight: bold;
-        border-radius: 25px;
-        border: none;
-        box-shadow: 0 0 20px #ff69b4;
-        padding: 0.75em 2em;
-        font-size: 1.2em;
-        transition: 0.3s ease;
-    }
-    .stDownloadButton button:hover {
-        background: linear-gradient(90deg, #845ec2, #ff5f6d);
-        color: black;
-    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -87,13 +72,10 @@ if st.session_state.page == "home":
         <div class="center">
             <h1>🎧 Digital Music Equalizer</h1>
             <p style='font-size: 1.2em;'>Shape your sound with studio-level precision.</p>
-            <form action="">
-                <button class="styled-button" type="submit" name="start" value="1">Start Now</button>
-            </form>
         </div>
     """, unsafe_allow_html=True)
 
-    if st.query_params.get("start") == "1":
+    if st.button("Start Now", key="start_button"):
         st.session_state.page = "equalizer"
         st.rerun()  # Force rerun to update page
 
@@ -108,7 +90,7 @@ elif st.session_state.page == "equalizer":
     """, unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
 
-    if st.markdown('<button class="styled-button">🎚️ Go to Equalizer Controls</button>', unsafe_allow_html=True):
+    if st.button("🎚️ Go to Equalizer Controls", key="controls_button"):
         st.session_state.page = "controls"
         st.rerun()  # Force rerun to update page
 
@@ -138,7 +120,7 @@ elif st.session_state.page == "controls":
             st.audio(buf, format='audio/wav')
 
             # Styled Download Button
-            st.markdown('<button class="styled-button">⬇️ Download Processed Audio</button>', unsafe_allow_html=True)
+            st.download_button("⬇️ Download Processed Audio", buf.getvalue(), file_name="hotpink_equalized_output.wav")
 
             # Visualization
             st.subheader("🔊 Processed Track Waveform")
